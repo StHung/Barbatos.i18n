@@ -40,9 +40,22 @@
 #
 # image files are treated as binary by default.
 ###############################################################################
-#*.jpg   binary
-#*.png   binary
-#*.gif   binary
+*.jpg    binary
+*.jpeg   binary
+*.png    binary
+*.gif    binary
+*.ico    binary
+*.svg    binary
+
+###############################################################################
+# behavior for binary build/signing artifacts
+###############################################################################
+*.snk    binary
+*.nupkg  binary
+*.snupkg binary
+*.dll    binary
+*.pdb    binary
+*.exe    binary
 
 ###############################################################################
 # diff behavior for common document formats
