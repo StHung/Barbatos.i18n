@@ -1,12 +1,10 @@
 name: barbatos-i18n-cd-nuget
 
 on:
-  push:
-    branches:
-      - main
-      - release/*
-    paths:
-      - "src/**"
+  # Chạy tự động khi anh publish một GitHub Release
+  release:
+    types: [published]
+  # Chạy thủ công từ tab Actions nếu cần
   workflow_dispatch:
 
 jobs:
