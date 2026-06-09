@@ -21,29 +21,38 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      
+
+      - name: Setup .NET Core SDK 10.x
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.x
+
       - uses: microsoft/setup-msbuild@v2
         with:
           msbuild-architecture: x64
 
       - name: Fetch the certificate
         run: |
+          if ([string]::IsNullOrWhiteSpace("${{ secrets.STRONG_NAME_KEY }}")) {
+            Write-Error "STRONG_NAME_KEY secret is not set or is empty."
+            exit 1
+          }
           $signing_keys_payload = [System.Convert]::FromBase64String("${{ secrets.STRONG_NAME_KEY }}")
+          if ($signing_keys_payload.Length -eq 0) {
+            Write-Error "STRONG_NAME_KEY decoded to an empty byte array. Ensure it is a valid base64-encoded .snk file."
+            exit 1
+          }
           $currentDirectory = Get-Location
           $certificatePath = Join-Path -Path $currentDirectory -ChildPath "src\barbatos.snk"
           [IO.File]::WriteAllBytes("$certificatePath", $signing_keys_payload)
-          
+          Write-Host "Certificate written to $certificatePath ($($signing_keys_payload.Length) bytes)"
+
       # 2. REQUIRED: Automatic login via Trusted Publishing
       - name: NuGet login (OIDC)
         uses: NuGet/login@v1
         id: login
         with:
           user: phamhung
-
-      - name: Setup .NET Core SDK 10.x
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 10.x
 
       - name: Install dependencies
         run: dotnet restore

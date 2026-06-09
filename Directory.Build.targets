@@ -67,7 +67,7 @@
     <EnableSingleFileAnalyzer>true</EnableSingleFileAnalyzer>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(SourceLinkEnabled)' == 'true' AND '$(GeneratePackageOnBuild)' == 'true'">
+  <PropertyGroup Condition="'$(SourceLinkEnabled)' == 'true' AND '$(GeneratePackageOnBuild)' == 'true' AND '$(IsCoreProject)' == 'true'">
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>$(RepositoryDirectory)\src\barbatos.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
