@@ -5,21 +5,19 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Authors>Barbatos</Authors>
+    <Authors>Pham The Hung</Authors>
     <Product>Barbatos.i18n</Product>
     <CommonTags>dotNet;i18n;desktopapp;wpf;translation;localization;resources;json;ini;yaml</CommonTags>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Copyright>(c) Barbatos | Pham The Hung and Contributors. All rights reserved.</Copyright>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Copyright>(c) 2026 Pham The Hung and Barbatos.i18n Contributors. All rights reserved.</Copyright>
     <Description>A modular and extensible localization (i18n) ecosystem for .NET and WPF. Independently evolved from lepoco.i18n, it features seamless Dependency Injection support and robust data providers for JSON, CSV, INI, YAML, and Resx formats, enabling dynamic, real-time UI translations.</Description>
     <PackageProjectUrl>https://github.com/StHung/Barbatos.i18n</PackageProjectUrl>
     <PackageReleaseNotes>https://github.com/StHung/Barbatos.i18n/releases</PackageReleaseNotes>
     <PackageIcon>Icon.png</PackageIcon>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-  </PropertyGroup>
+
 
   <PropertyGroup>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -54,12 +52,14 @@
   <Choose>
     <When Condition="$(IsCoreProject)">
       <PropertyGroup>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
       </PropertyGroup>
     </When>
     <Otherwise>
       <PropertyGroup>
+        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
         <IsPackable>false</IsPackable>
         <IsPublishable>false</IsPublishable>
         <NoWarn>$(NoWarn);CS8002;SA0001</NoWarn>

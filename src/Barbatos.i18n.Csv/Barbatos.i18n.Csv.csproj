@@ -5,7 +5,7 @@
     <TargetFrameworks>net10.0;net9.0;net8.0</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <CommonTags>$(CommonTags);csv;serialization</CommonTags>
-    <Description>Barbatos.i18n.Csv is an essential tool for developers aiming to create multilingual applications.</Description>
+    <Description>CSV data provider for Barbatos.i18n. Enables loading localization strings from CSV files, with full support for real-time language switching and seamless integration with the Barbatos.i18n core engine.</Description>
   </PropertyGroup>
 
   <ItemGroup>
