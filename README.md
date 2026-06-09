@@ -510,7 +510,7 @@ The library contains a rich set of primitives for localization management (`Barb
 
 Due to the extensive nature of the library's interfaces, classes, and properties, the full API Reference has been moved to a dedicated document modeled after Microsoft's official .NET documentation format.
 
-👉 **[Read the Full API Reference](API-REFERENCE.md)** 👈
+👉 **[Read the Full API Reference](https://github.com/StHung/Barbatos.i18n/blob/main/API-REFERENCE.md)** 👈
 
 In the full reference, you will find comprehensive documentation for:
 - `LocalizationBuilder`, `LocalizationSet`, `LocalizationKey`
@@ -533,6 +533,6 @@ For support, please open a [GitHub issue](https://github.com/StHung/Barbatos.i18
 
 ### License
 
-This project is licensed under the terms of the **MIT** open source license. Please refer to the [LICENSE](LICENSE) file for the full terms.
+This project is licensed under the terms of the **MIT** open source license. Please refer to the [LICENSE](https://github.com/StHung/Barbatos.i18n/blob/main/LICENSE.md) file for the full terms.
 
 You can use it in private and commercial projects. Keep in mind that you must include a copy of the license in your project.
