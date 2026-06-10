@@ -55,6 +55,11 @@ app.Use(async (context, next) =>
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/openapi/v1.json", "Barbatos.i18n Sample WebApi v1");
+        options.RoutePrefix = "swagger";
+    });
 }
 
 app.UseHttpsRedirection();
@@ -62,6 +67,7 @@ app.UseHttpsRedirection();
 // Use cases:
 
 // 1. Basic Greeting (JSON)
+// https://127.0.0.1:7168/greeting?culture=vi-VN
 app.MapGet("/greeting", ([FromServices] ICompositeStringLocalizer localizer) =>
 {
     return Results.Ok(new { Message = localizer["Greeting"] });
