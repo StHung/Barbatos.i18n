@@ -51,8 +51,7 @@ public static class ApplicationExtensions
     /// <returns>The application with the set culture.</returns>
     public static Application SetLocalizationCulture(this Application app, CultureInfo culture)
     {
-        var diManager = WpfLocalization.ServiceProvider?.GetService(typeof(ILocalizationCultureManager)) as ILocalizationCultureManager;
-        if (diManager != null)
+        if (WpfLocalization.ServiceProvider?.GetService(typeof(ILocalizationCultureManager)) is ILocalizationCultureManager diManager)
         {
             diManager.SetCulture(culture);
         }
@@ -105,7 +104,7 @@ public static class ApplicationExtensions
         }
 
         // If the window is already active, we must update its Language property directly
-        if (Application.Current?.MainWindow != null)
+        if (Application.Current?.MainWindow is not null)
         {
             Application.Current.MainWindow.Language = XmlLanguage.GetLanguage(targetCulture.IetfLanguageTag);
         }

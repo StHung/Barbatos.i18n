@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/samples/">
     <Project Path="samples/Barbatos.i18n.Sample.WebApi/Barbatos.i18n.Sample.WebApi.csproj" />
+    <Project Path="samples/Barbatos.i18n.Sample.Maui/Barbatos.i18n.Sample.Maui.csproj" />
     <Project Path="samples/Barbatos.i18n.Sample.Wpf/Barbatos.i18n.Sample.Wpf.csproj" />
 	<Project Path="samples/Barbatos.i18n.Sample.Wpf/Barbatos.i18n.Sample.Maui.csproj" />
   </Folder>
@@ -18,8 +19,8 @@
     <Project Path="src/Barbatos.i18n.DependencyInjection/Barbatos.i18n.DependencyInjection.csproj" />
     <Project Path="src/Barbatos.i18n.Ini/Barbatos.i18n.Ini.csproj" />
     <Project Path="src/Barbatos.i18n.Json/Barbatos.i18n.Json.csproj" />
+    <Project Path="src/Barbatos.i18n.Maui/Barbatos.i18n.Maui.csproj" />
     <Project Path="src/Barbatos.i18n.Wpf/Barbatos.i18n.Wpf.csproj" />
-	<Project Path="src/Barbatos.i18n.Wpf/Barbatos.i18n.Maui.csproj" />
     <Project Path="src/Barbatos.i18n/Barbatos.i18n.csproj" />
   </Folder>
   <Folder Name="/tests/">
