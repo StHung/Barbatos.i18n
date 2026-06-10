@@ -1,4 +1,4 @@
-﻿namespace Barbatos.i18n.Sample.Maui;
+namespace Barbatos.i18n.Sample.Maui;
 
 public partial class AppShell : Shell
 {

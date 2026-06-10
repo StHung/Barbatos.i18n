@@ -1,4 +1,4 @@
-﻿using Foundation;
+using Foundation;
 
 namespace Barbatos.i18n.Sample.Maui;
 
