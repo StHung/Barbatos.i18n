@@ -15,7 +15,7 @@ internal static class IniLocalizationParser
         string currentSection = string.Empty;
         string? line;
         
-        while ((line = reader.ReadLine()) != null)
+        while ((line = reader.ReadLine()) is not null)
         {
             line = line.Trim();
             
