@@ -1,9 +1,0 @@
-{
-  "version": "2.0",
-  "Title": "Barbatos.i18n trên MAUI",
-  "Greeting": "Xin chào từ {0}!",
-  "ClickMe": "Nhấn vào tôi",
-  "ClickedTimes": "Đã nhấn {0} lần",
-  "OneItem": "1 Mục",
-  "ManyItems": "{0} Mục"
-}

@@ -1,23 +1,20 @@
-﻿namespace Barbatos.i18n.Sample.Maui;
+// This Source Code Form is subject to the terms of the MIT License.
+// If a copy of the MIT was not distributed with this file, You can obtain one at https://opensource.org/licenses/MIT.
+// Copyright (C) Pham The Hung and Barbatos.i18n Contributors.
+// All Rights Reserved.
+
+using System.Globalization;
+using Barbatos.i18n.Maui;
+
+namespace Barbatos.i18n.Sample.Maui;
 
 public partial class MainPage : ContentPage
 {
-	int count = 0;
+    private static readonly MainViewModel _viewModel = new();
 
-	public MainPage()
-	{
-		InitializeComponent();
-	}
-
-	private void OnCounterClicked(object sender, EventArgs e)
-	{
-		count++;
-
-		if (count == 1)
-			CounterBtn.Text = $"Clicked {count} time";
-		else
-			CounterBtn.Text = $"Clicked {count} times";
-
-		SemanticScreenReader.Announce(CounterBtn.Text);
-	}
+    public MainPage()
+    {
+        InitializeComponent();
+        BindingContext = _viewModel;
+    }
 }

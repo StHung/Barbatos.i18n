@@ -91,7 +91,7 @@ public class PluralStringLocalizerExtension : IMarkupExtension<BindingBase>
         {
             var keyStr = PluralText ?? string.Empty;
             localizedString =
-                localizationSet.Strings.FirstOrDefault(s => s.Key.ToString() == keyStr).Value
+                localizationSet.Strings.FirstOrDefault(s => s.Key == (LocalizationKey)keyStr).Value
                 ?? EscapeText(PluralText)
                 ?? string.Empty;
         }
@@ -99,7 +99,7 @@ public class PluralStringLocalizerExtension : IMarkupExtension<BindingBase>
         {
             var keyStr = Text ?? string.Empty;
             localizedString =
-                localizationSet.Strings.FirstOrDefault(s => s.Key.ToString() == keyStr).Value
+                localizationSet.Strings.FirstOrDefault(s => s.Key == (LocalizationKey)keyStr).Value
                 ?? EscapeText(Text)
                 ?? string.Empty;
         }

@@ -1,9 +1,0 @@
-{
-  "version": "2.0",
-  "Title": "Barbatos.i18n on MAUI",
-  "Greeting": "Hello from {0}!",
-  "ClickMe": "Click me",
-  "ClickedTimes": "Clicked {0} times",
-  "OneItem": "1 Item",
-  "ManyItems": "{0} Items"
-}
