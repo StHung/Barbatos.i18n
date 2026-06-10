@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using Microsoft.Maui.Controls;
-using Microsoft.Maui.Controls.Xaml;
-using Barbatos.i18n;
 
 namespace Barbatos.i18n.Maui;
 

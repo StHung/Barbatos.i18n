@@ -1,10 +1,3 @@
-using System;
-using System.Globalization;
-using System.Collections.Generic;
-using Microsoft.Maui.Controls;
-using Microsoft.Maui.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Barbatos.i18n;
 
 namespace Barbatos.i18n.Maui;
 

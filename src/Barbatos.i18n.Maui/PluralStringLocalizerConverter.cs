@@ -1,8 +1,3 @@
-using System;
-using System.Globalization;
-using System.Linq;
-using Microsoft.Maui.Controls;
-using Barbatos.i18n;
 
 namespace Barbatos.i18n.Maui;
 
