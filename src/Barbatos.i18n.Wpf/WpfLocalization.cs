@@ -35,10 +35,9 @@ public static class WpfLocalization
     /// <returns>The <see cref="ILocalizationProvider"/> if found; otherwise, null.</returns>
     public static ILocalizationProvider? GetProvider(string? key = null)
     {
-        if (ServiceProvider == null) return null;
+        if (ServiceProvider is null) return null;
 
-        var resolver = ServiceProvider.GetService(typeof(ILocalizationProviderResolver)) as ILocalizationProviderResolver;
-        if (resolver != null)
+        if (ServiceProvider.GetService(typeof(ILocalizationProviderResolver)) is ILocalizationProviderResolver resolver)
         {
             return resolver.GetProvider(key);
         }
