@@ -218,16 +218,23 @@ public class StringLocalizerExtension : MarkupExtension
     /// <returns>The escaped text.</returns>
     private static string EscapeText(string? text)
     {
-        if (text is null)
+        if (string.IsNullOrEmpty(text))
         {
             return string.Empty;
         }
 
-        return text.Replace("&amp;", "&")
+        if (text.IndexOf('&') < 0)
+        {
+            return text.Trim();
+        }
+
+        return new System.Text.StringBuilder(text)
+            .Replace("&amp;", "&")
             .Replace("&lt;", "<")
             .Replace("&gt;", ">")
             .Replace("&quot;", "\"")
             .Replace("&apos;", "'")
+            .ToString()
             .Trim();
     }
 }
