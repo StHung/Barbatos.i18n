@@ -3,7 +3,6 @@
     <Project Path="samples/Barbatos.i18n.Sample.WebApi/Barbatos.i18n.Sample.WebApi.csproj" />
     <Project Path="samples/Barbatos.i18n.Sample.Maui/Barbatos.i18n.Sample.Maui.csproj" />
     <Project Path="samples/Barbatos.i18n.Sample.Wpf/Barbatos.i18n.Sample.Wpf.csproj" />
-	<Project Path="samples/Barbatos.i18n.Sample.Wpf/Barbatos.i18n.Sample.Maui.csproj" />
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path=".editorconfig" />

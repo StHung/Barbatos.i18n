@@ -40,11 +40,11 @@ public partial class MainViewModel : ObservableObject
         }
     }
 
-    public ObservableCollection<string> PickerItems { get; } = new()
+    public ObservableCollection<string> AvailableOptions { get; } = new()
     {
-        "PickerItem1",
-        "PickerItem2",
-        "PickerItem3"
+        "ComboBoxItem1",
+        "ComboBoxItem2",
+        "ComboBoxItem3"
     };
 
     [ObservableProperty]
@@ -79,6 +79,78 @@ public partial class MainViewModel : ObservableObject
     {
         var currentCulture = CultureInfo.CurrentUICulture;
         _selectedCulture = SupportedCultures.FirstOrDefault(c => c.Name == currentCulture.Name) ?? SupportedCultures[0];
+    }
+
+    [RelayCommand]
+    private async Task ShowMessageAsync()
+    {
+        var provider = MauiLocalization.GetProvider();
+        if (provider == null) return;
+
+        var culture = provider.GetCulture();
+        var set = provider.GetLocalizationSet(culture, null);
+        if (set == null) return;
+
+        string title = set["MessageTitle"] ?? "Hello from Code-Behind";
+        string message = set.Format("MessageContent", UserName) ?? $"Welcome to Barbatos.i18n, {UserName}!";
+        string ok = set["Ok"] ?? "OK";
+
+        if (Shell.Current != null)
+        {
+            await Shell.Current.DisplayAlertAsync(title, message, ok);
+        }
+    }
+
+    [RelayCommand]
+    private async Task ShowConfirmationAsync()
+    {
+        var provider = MauiLocalization.GetProvider();
+        if (provider == null) return;
+
+        var culture = provider.GetCulture();
+        var set = provider.GetLocalizationSet(culture, null);
+        if (set == null) return;
+
+        string title = set["QuestionTitle"] ?? "Confirmation";
+        string message = set["QuestionContent"] ?? "Are you sure you want to proceed?";
+        string yes = set["Yes"] ?? "Yes";
+        string no = set["No"] ?? "No";
+
+        if (Shell.Current != null)
+        {
+            bool result = await Shell.Current.DisplayAlertAsync(title, message, yes, no);
+            
+            string responseTitle = set["MessageTitle"] ?? "Result";
+            string responseMessage = result ? (set["Yes"] ?? "Yes") : (set["No"] ?? "No");
+            string ok = set["Ok"] ?? "OK";
+            await Shell.Current.DisplayAlertAsync(responseTitle, responseMessage, ok);
+        }
+    }
+
+    [RelayCommand]
+    private async Task ShowPromptAsync()
+    {
+        var provider = MauiLocalization.GetProvider();
+        if (provider == null) return;
+
+        var culture = provider.GetCulture();
+        var set = provider.GetLocalizationSet(culture, null);
+        if (set == null) return;
+
+        string title = set["PromptTitle"] ?? "Input Name";
+        string message = set["PromptContent"] ?? "Please enter your name:";
+        string ok = set["Ok"] ?? "OK";
+        string cancel = set["Cancel"] ?? "Cancel";
+        string placeholder = set["PromptPlaceholder"] ?? "Type name here...";
+
+        if (Shell.Current != null)
+        {
+            string result = await Shell.Current.DisplayPromptAsync(title, message, ok, cancel, placeholder);
+            if (!string.IsNullOrWhiteSpace(result))
+            {
+                UserName = result;
+            }
+        }
     }
 }
 

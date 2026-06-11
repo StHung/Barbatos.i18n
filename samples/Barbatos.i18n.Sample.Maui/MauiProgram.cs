@@ -27,7 +27,7 @@ public static class MauiProgram
             builder
                 // Default Provider: main locale + errors namespace (demonstrates Namespace feature)
                 // Paths use dot notation matching EmbeddedResource naming: {Folder}.{FileName}
-                .UseBarbatosLocalization(locBuilder =>
+                .UseStringLocalizer(locBuilder =>
                 {
                     locBuilder.FromJson("Locales.Locales-en-US.json", new CultureInfo("en-US"));
                     locBuilder.FromJson("Locales.Locales-vi-VN.json", new CultureInfo("vi-VN"));
@@ -37,15 +37,14 @@ public static class MauiProgram
                     locBuilder.FromJson("Locales.Errors-en-US.json", new CultureInfo("en-US"));
                     locBuilder.FromJson("Locales.Errors-vi-VN.json", new CultureInfo("vi-VN"));
                     locBuilder.FromJson("Locales.Errors-ko-KR.json", new CultureInfo("ko-KR"));
+                })
+                // Secondary Provider: demonstrates Multiple Providers (ProviderKey) feature
+                .UseStringLocalizer("SecondaryProvider", locBuilder =>
+                {
+                    locBuilder.FromJson("Locales.Extra-en-US.json", new CultureInfo("en-US"));
+                    locBuilder.FromJson("Locales.Extra-vi-VN.json", new CultureInfo("vi-VN"));
+                    locBuilder.FromJson("Locales.Extra-ko-KR.json", new CultureInfo("ko-KR"));
                 });
-
-            // Secondary Provider: demonstrates Multiple Providers (ProviderKey) feature
-            var secondaryBuilder = new LocalizationBuilder();
-            secondaryBuilder.FromJson("Locales.Extra-en-US.json", new CultureInfo("en-US"));
-            secondaryBuilder.FromJson("Locales.Extra-vi-VN.json", new CultureInfo("vi-VN"));
-            secondaryBuilder.FromJson("Locales.Extra-ko-KR.json", new CultureInfo("ko-KR"));
-            var secondaryProvider = secondaryBuilder.Build();
-            LocalizationProviderFactory.SetInstance(secondaryProvider, "SecondaryProvider");
         }
         catch (Exception ex)
         {

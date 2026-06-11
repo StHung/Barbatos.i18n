@@ -17,15 +17,7 @@ public partial class App : Application
             {
                 if (Current?.Windows.Count > 0)
                 {
-#if ANDROID
-                    // MAUI .NET 8 on Android is very strict about replacing the root page.
-                    // The standard Android way to apply locale changes across the entire app
-                    // without killing the process or detaching the debugger is Activity.Recreate()
-                    var activity = Microsoft.Maui.ApplicationModel.Platform.CurrentActivity;
-                    activity?.Recreate();
-#else
                     Current.Windows[0].Page = new AppShell();
-#endif
                 }
             });
         });

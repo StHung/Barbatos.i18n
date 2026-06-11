@@ -12,6 +12,31 @@ namespace Barbatos.i18n.Maui;
 public class StringLocalizerExtension : IMarkupExtension<BindingBase>
 {
     /// <summary>
+    /// Initializes a new instance of the <see cref="StringLocalizerExtension"/> class.
+    /// </summary>
+    public StringLocalizerExtension() { }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StringLocalizerExtension"/> class with the specified text.
+    /// </summary>
+    /// <param name="text">The text to be localized.</param>
+    public StringLocalizerExtension(string? text)
+    {
+        Text = text;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="StringLocalizerExtension"/> class with the specified text and namespace.
+    /// </summary>
+    /// <param name="text">The text to be localized.</param>
+    /// <param name="textNamespace">The namespace of the text to be localized.</param>
+    public StringLocalizerExtension(string? text, string? textNamespace)
+    {
+        Text = text;
+        Namespace = textNamespace;
+    }
+
+    /// <summary>
     /// Gets or sets the text to be localized.
     /// </summary>
     public string? Text { get; set; }

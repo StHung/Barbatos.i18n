@@ -12,6 +12,39 @@ namespace Barbatos.i18n.Maui;
 public class PluralStringLocalizerExtension : IMarkupExtension<BindingBase>
 {
     /// <summary>
+    /// Initializes a new instance of the <see cref="PluralStringLocalizerExtension"/> class.
+    /// </summary>
+    public PluralStringLocalizerExtension() { }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PluralStringLocalizerExtension"/> class with the specified count, text, and plural text.
+    /// </summary>
+    /// <param name="count">The count that determines whether to use the singular or plural form.</param>
+    /// <param name="text">The text to be localized.</param>
+    /// <param name="pluralText">The plural text to be localized.</param>
+    public PluralStringLocalizerExtension(int count, string text, string pluralText)
+    {
+        Count = count;
+        Text = text;
+        PluralText = pluralText;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PluralStringLocalizerExtension"/> class with the specified count, text, plural text, and namespace.
+    /// </summary>
+    /// <param name="count">The count that determines whether to use the singular or plural form.</param>
+    /// <param name="text">The text to be localized.</param>
+    /// <param name="pluralText">The plural text to be localized.</param>
+    /// <param name="namespaceName">The namespace of the text to be localized.</param>
+    public PluralStringLocalizerExtension(int count, string text, string pluralText, string namespaceName)
+    {
+        Count = count;
+        Text = text;
+        PluralText = pluralText;
+        Namespace = namespaceName;
+    }
+
+    /// <summary>
     /// Gets or sets the count.
     /// </summary>
     public int? Count { get; set; }

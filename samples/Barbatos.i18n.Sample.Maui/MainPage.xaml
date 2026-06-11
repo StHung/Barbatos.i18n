@@ -126,7 +126,7 @@
                    FontAttributes="Bold"
                    FontSize="14"
                    Margin="0,0,0,8" />
-            <Picker ItemsSource="{Binding PickerItems}"
+            <Picker ItemsSource="{Binding AvailableOptions}"
                     SelectedIndex="0"
                     Margin="10,0,0,20"
                     HorizontalOptions="Start"
@@ -184,8 +184,25 @@
                    TextColor="#107C10"
                    Margin="10,0,0,5" />
             <Label Text="{i18n:StringLocalizer Text='DistanceIs', BindArg={Binding Distance}}"
-                   TextColor="#107C10"
-                   Margin="10,0,0,5" />
+                    TextColor="#107C10"
+                    Margin="10,0,0,5" />
+
+            <!-- 10. Localized Dialogs, Popups & Message Boxes -->
+            <Label Text="{i18n:StringLocalizer Text='HeaderDialogs'}"
+                   FontAttributes="Bold"
+                   FontSize="14"
+                   Margin="0,20,0,8" />
+            <VerticalStackLayout Spacing="10" Margin="10,0,0,20">
+                <Button Text="{i18n:StringLocalizer Text='ShowMessageButton'}"
+                        Command="{Binding ShowMessageCommand}"
+                        HorizontalOptions="Start" />
+                <Button Text="{i18n:StringLocalizer Text='ShowConfirmationButton'}"
+                        Command="{Binding ShowConfirmationCommand}"
+                        HorizontalOptions="Start" />
+                <Button Text="{i18n:StringLocalizer Text='ShowPromptButton'}"
+                        Command="{Binding ShowPromptCommand}"
+                        HorizontalOptions="Start" />
+            </VerticalStackLayout>
 
         </VerticalStackLayout>
     </ScrollView>
