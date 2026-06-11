@@ -6,28 +6,24 @@
 namespace Barbatos.i18n.Maui;
 
 /// <summary>
-/// Provides a value converter that localizes strings in XAML.
+/// A value converter that translates a dynamic string key into a localized string.
+/// Useful for binding collections (e.g., ItemsSource) where the key is only known at runtime.
 /// </summary>
 public class LocalizeConverter : IValueConverter
 {
     /// <summary>
-    /// Gets or sets the namespace of the text to be localized.
+    /// The namespace of the text to be localized.
     /// </summary>
     public string? Namespace { get; set; }
 
     /// <summary>
-    /// Provider key.
+    /// The provider key for localization.
     /// </summary>
     public string ProviderKey { get; set; } = string.Empty;
 
     /// <summary>
-    /// Converts a value.
+    /// Converts a localization key into a localized string.
     /// </summary>
-    /// <param name="value">The value produced by the binding source.</param>
-    /// <param name="targetType">The type of the binding target property.</param>
-    /// <param name="parameter">The converter parameter to use.</param>
-    /// <param name="culture">The culture to use in the converter.</param>
-    /// <returns>A converted value. If the method returns null, the valid null value is used.</returns>
     public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         if (value is not string stringValue || string.IsNullOrEmpty(stringValue))
@@ -54,13 +50,8 @@ public class LocalizeConverter : IValueConverter
     }
 
     /// <summary>
-    /// Converts a value.
+    /// Not supported.
     /// </summary>
-    /// <param name="value">The value that is produced by the binding target.</param>
-    /// <param name="targetType">The type to convert to.</param>
-    /// <param name="parameter">The converter parameter to use.</param>
-    /// <param name="culture">The culture to use in the converter.</param>
-    /// <returns>A converted value. If the method returns null, the valid null value is used.</returns>
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
         throw new NotSupportedException();

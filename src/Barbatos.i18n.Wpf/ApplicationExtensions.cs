@@ -18,16 +18,25 @@ public static class ApplicationExtensions
     /// <param name="app">The application to configure.</param>
     /// <param name="configure">A delegate to configure the localization builder.</param>
     /// <returns>The configured application.</returns>
-    public static Application UseStringLocalizer(
-        this Application app,
-        Action<LocalizationBuilder> configure
-    )
+    public static Application UseStringLocalizer(this Application app, Action<LocalizationBuilder> configure)
     {
-        LocalizationBuilder builder = new();
+        return app.UseStringLocalizer(null, configure);
+    }
 
-        configure(builder);
+    /// <summary>
+    /// Configures the application to use a string localizer with a specific provider key.
+    /// </summary>
+    /// <param name="app">The application to configure.</param>
+    /// <param name="providerKey">The key to associate with the provider. If null, it becomes the default provider.</param>
+    /// <param name="configure">A delegate to configure the localization builder.</param>
+    /// <returns>The configured application.</returns>
+    public static Application UseStringLocalizer(this Application app, string? providerKey, Action<LocalizationBuilder> configure)
+    {
+        var locBuilder = new LocalizationBuilder();
+        configure(locBuilder);
+        var provider = locBuilder.Build();
 
-        LocalizationProviderFactory.SetInstance(builder.Build());
+        LocalizationProviderFactory.SetInstance(provider, providerKey ?? string.Empty);
 
         return app;
     }

@@ -6,7 +6,7 @@
 namespace Barbatos.i18n.Maui;
 
 /// <summary>
-/// Provides a markup extension that localizes strings in XAML.
+/// Provides a markup extension that localizes strings in XAML, supporting both singular and plural forms.
 /// </summary>
 [ContentProperty(nameof(Count))]
 public class PluralStringLocalizerExtension : IMarkupExtension<BindingBase>
@@ -45,22 +45,22 @@ public class PluralStringLocalizerExtension : IMarkupExtension<BindingBase>
     }
 
     /// <summary>
-    /// Gets or sets the count.
+    /// Gets or sets the count that determines whether to use the singular or plural form of the text.
     /// </summary>
     public int? Count { get; set; }
 
     /// <summary>
-    /// Gets or sets the text.
+    /// Gets or sets the text to be localized.
     /// </summary>
     public string? Text { get; set; }
 
     /// <summary>
-    /// Gets or sets the plural text.
+    /// Gets or sets the plural text to be localized.
     /// </summary>
     public string? PluralText { get; set; }
 
     /// <summary>
-    /// Gets or sets the namespace.
+    /// Gets or sets the namespace of the text to be localized.
     /// </summary>
     public string? Namespace { get; set; }
 
@@ -70,17 +70,17 @@ public class PluralStringLocalizerExtension : IMarkupExtension<BindingBase>
     public string ProviderKey { get; set; } = string.Empty;
 
     /// <summary>
-    /// Gets or sets the binding count.
+    /// Gets or sets the binding for count that determines whether to use the singular or plural form of the text.
     /// </summary>
     public BindingBase? BindCount { get; set; } = null;
 
     /// <summary>
-    /// Gets or sets the string format.
+    /// Optional string format to apply to the final localized string.
     /// </summary>
     public string? StringFormat { get; set; } = null;
 
     /// <summary>
-    /// Returns a localized string for the text property.
+    /// Returns a localized string for the <see cref="Text"/> property.
     /// </summary>
     /// <param name="serviceProvider">An object that provides services for the markup extension.</param>
     /// <returns>The localized string, or the original text if no localization is found.</returns>
@@ -114,7 +114,7 @@ public class PluralStringLocalizerExtension : IMarkupExtension<BindingBase>
 
         if (localizationSet is null)
         {
-            string fallback = Count > 1 ? EscapeText(PluralText) ?? string.Empty : EscapeText(Text) ?? string.Empty;
+            string fallback = Count > 1 ? StringLocalizerExtension.EscapeText(PluralText) ?? string.Empty : StringLocalizerExtension.EscapeText(Text) ?? string.Empty;
             return new Binding { Source = fallback };
         }
 
@@ -125,7 +125,7 @@ public class PluralStringLocalizerExtension : IMarkupExtension<BindingBase>
             var keyStr = PluralText ?? string.Empty;
             localizedString =
                 localizationSet.Strings.FirstOrDefault(s => s.Key == (LocalizationKey)keyStr).Value
-                ?? EscapeText(PluralText)
+                ?? StringLocalizerExtension.EscapeText(PluralText)
                 ?? string.Empty;
         }
         else
@@ -133,7 +133,7 @@ public class PluralStringLocalizerExtension : IMarkupExtension<BindingBase>
             var keyStr = Text ?? string.Empty;
             localizedString =
                 localizationSet.Strings.FirstOrDefault(s => s.Key == (LocalizationKey)keyStr).Value
-                ?? EscapeText(Text)
+                ?? StringLocalizerExtension.EscapeText(Text)
                 ?? string.Empty;
         }
 
@@ -153,20 +153,5 @@ public class PluralStringLocalizerExtension : IMarkupExtension<BindingBase>
     object IMarkupExtension.ProvideValue(IServiceProvider serviceProvider)
     {
         return ProvideValue(serviceProvider);
-    }
-
-    private static string EscapeText(string? text)
-    {
-        if (text is null)
-        {
-            return string.Empty;
-        }
-
-        return text.Replace("&amp;", "&")
-            .Replace("&lt;", "<")
-            .Replace("&gt;", ">")
-            .Replace("&quot;", "\"")
-            .Replace("&apos;", "'")
-            .Trim();
     }
 }

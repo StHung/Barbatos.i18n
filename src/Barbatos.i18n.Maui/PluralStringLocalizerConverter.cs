@@ -11,22 +11,22 @@ namespace Barbatos.i18n.Maui;
 public sealed class PluralStringLocalizerConverter : IMultiValueConverter
 {
     /// <summary>
-    /// Gets the text.
+    /// Gets or sets the text to be localized.
     /// </summary>
     public string? Text { get; }
 
     /// <summary>
-    /// Gets the plural text.
+    /// Gets or sets the plural text to be localized.
     /// </summary>
     public string? PluralText { get; }
 
     /// <summary>
-    /// Gets the namespace.
+    /// Gets or sets the namespace of the text to be localized.
     /// </summary>
     public string? Namespace { get; }
 
     /// <summary>
-    /// Gets the provider key.
+    /// Provider key.
     /// </summary>
     public string ProviderKey { get; }
 

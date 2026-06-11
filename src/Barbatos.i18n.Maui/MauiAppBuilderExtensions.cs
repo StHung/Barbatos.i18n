@@ -35,10 +35,6 @@ public static class MauiAppBuilderExtensions
         var provider = locBuilder.Build();
 
         LocalizationProviderFactory.SetInstance(provider, providerKey ?? string.Empty);
-        if (providerKey is null)
-        {
-            MauiLocalization.Initialize(provider);
-        }
 
         // Check if ILocalizationProviderResolver is already registered
         var resolverDescriptor = builder.Services.FirstOrDefault(d => d.ServiceType == typeof(ILocalizationProviderResolver));

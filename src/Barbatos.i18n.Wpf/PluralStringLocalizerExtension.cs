@@ -3,8 +3,6 @@
 // Copyright (C) Pham The Hung and Barbatos.i18n Contributors.
 // All Rights Reserved.
 
-using System.Windows.Data;
-
 namespace Barbatos.i18n.Wpf;
 
 /// <summary>
@@ -32,8 +30,8 @@ public class PluralStringLocalizerExtension : MarkupExtension
     public PluralStringLocalizerExtension(int count, string text, string pluralText)
     {
         Count = count;
-        Text = EscapeText(text);
-        PluralText = EscapeText(pluralText);
+        Text = StringLocalizerExtension.EscapeText(text);
+        PluralText = StringLocalizerExtension.EscapeText(pluralText);
     }
 
     /// <summary>
@@ -51,8 +49,8 @@ public class PluralStringLocalizerExtension : MarkupExtension
     )
     {
         Count = count;
-        Text = EscapeText(text);
-        PluralText = EscapeText(pluralText);
+        Text = StringLocalizerExtension.EscapeText(text);
+        PluralText = StringLocalizerExtension.EscapeText(pluralText);
         Namespace = namespaceName;
     }
 
@@ -161,33 +159,6 @@ public class PluralStringLocalizerExtension : MarkupExtension
     private bool IsSelectedNumberPlural()
     {
         return Count > 1;
-    }
-
-    /// <summary>
-    /// Escapes special characters in a string.
-    /// </summary>
-    /// <param name="text">The text to escape.</param>
-    /// <returns>The escaped text.</returns>
-    private static string EscapeText(string? text)
-    {
-        if (string.IsNullOrEmpty(text))
-        {
-            return string.Empty;
-        }
-
-        if (text.IndexOf('&') < 0)
-        {
-            return text.Trim();
-        }
-
-        return new System.Text.StringBuilder(text)
-            .Replace("&amp;", "&")
-            .Replace("&lt;", "<")
-            .Replace("&gt;", ">")
-            .Replace("&quot;", "\"")
-            .Replace("&apos;", "'")
-            .ToString()
-            .Trim();
     }
 
     /// <summary>

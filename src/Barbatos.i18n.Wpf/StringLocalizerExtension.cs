@@ -3,8 +3,6 @@
 // Copyright (C) Pham The Hung and Barbatos.i18n Contributors.
 // All Rights Reserved.
 
-using System.Windows.Data;
-
 namespace Barbatos.i18n.Wpf;
 
 /// <summary>
@@ -225,7 +223,7 @@ public class StringLocalizerExtension : MarkupExtension
     /// </summary>
     /// <param name="text">The text to escape.</param>
     /// <returns>The escaped text.</returns>
-    private static string EscapeText(string? text)
+    public static string EscapeText(string? text)
     {
         if (string.IsNullOrEmpty(text))
         {

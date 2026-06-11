@@ -3,9 +3,6 @@
 // Copyright (C) Pham The Hung and Barbatos.i18n Contributors.
 // All Rights Reserved.
 
-using System.Globalization;
-using System.Windows.Data;
-
 namespace Barbatos.i18n.Wpf;
 
 /// <summary>
@@ -57,6 +54,6 @@ public sealed class LocalizeConverter : IValueConverter
     /// </summary>
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        throw new NotSupportedException();
+        return Binding.DoNothing;
     }
 }

@@ -3,17 +3,29 @@
 // Copyright (C) Pham The Hung and Barbatos.i18n Contributors.
 // All Rights Reserved.
 
-using System.Globalization;
-using System.Windows.Data;
-
 namespace Barbatos.i18n.Wpf;
 
+/// <summary>
+/// Provides a multi value converter that localizes strings in XAML.
+/// </summary>
 public sealed class StringLocalizerConverter : IMultiValueConverter
 {
-    public string Text { get; }
-    public string? Namespace { get; }
-    public string ProviderKey { get; }
     private readonly string?[]? _stringFormats;
+
+    /// <summary>
+    /// Gets or sets the text to be localized.
+    /// </summary>
+    public string Text { get; }
+
+    /// <summary>
+    /// Gets or sets the namespace of the text to be localized.
+    /// </summary>
+    public string? Namespace { get; }
+
+    /// <summary>
+    /// Provider key.
+    /// </summary>
+    public string ProviderKey { get; }
 
     public StringLocalizerConverter(string text, string? textNamespace, string providerKey, string?[]? stringFormats = null)
     {
@@ -42,7 +54,7 @@ public sealed class StringLocalizerConverter : IMultiValueConverter
 
         if (localizationSet is null)
         {
-            return Text;
+            return StringLocalizerExtension.EscapeText(Text);
         }
 
         // Apply StringFormat to individual values if provided
@@ -67,9 +79,12 @@ public sealed class StringLocalizerConverter : IMultiValueConverter
             }
         }
 
-        return localizationSet.Format(culture, Text, formatValues) ?? string.Empty;
+        return localizationSet.Format(culture, Text, formatValues) ?? StringLocalizerExtension.EscapeText(Text);
     }
 
+    /// <summary>
+    /// Not supported.
+    /// </summary>
     public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
     {
         throw new NotSupportedException();

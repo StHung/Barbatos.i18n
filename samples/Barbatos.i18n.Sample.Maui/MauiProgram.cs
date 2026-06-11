@@ -4,7 +4,6 @@
 // All Rights Reserved.
 
 using System.Globalization;
-using Barbatos.i18n;
 using Barbatos.i18n.Json;
 using Barbatos.i18n.Maui;
 
@@ -52,6 +51,9 @@ public static class MauiProgram
             throw;
         }
 
-        return builder.Build();
+        return builder
+            .Build()
+            .UseMauiLocalization()
+            .SetLocalizationCulture(new CultureInfo("vi-VN"));
     }
 }

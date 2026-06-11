@@ -3,8 +3,6 @@
 // Copyright (C) Pham The Hung and Barbatos.i18n Contributors.
 // All Rights Reserved.
 
-using System.Windows.Data;
-
 namespace Barbatos.i18n.Wpf;
 
 public sealed class PluralStringLocalizerConverter : IMultiValueConverter

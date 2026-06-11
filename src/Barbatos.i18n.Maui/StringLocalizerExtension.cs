@@ -182,18 +182,30 @@ public class StringLocalizerExtension : IMarkupExtension<BindingBase>
         return ProvideValue(serviceProvider);
     }
 
-    private static string EscapeText(string? text)
+    /// <summary>
+    /// Escapes special characters in a string.
+    /// </summary>
+    /// <param name="text">The text to escape.</param>
+    /// <returns>The escaped text.</returns>
+    public static string EscapeText(string? text)
     {
-        if (text is null)
+        if (string.IsNullOrEmpty(text))
         {
             return string.Empty;
         }
 
-        return text.Replace("&amp;", "&")
+        if (text.IndexOf('&') < 0)
+        {
+            return text.Trim();
+        }
+
+        return new System.Text.StringBuilder(text)
+            .Replace("&amp;", "&")
             .Replace("&lt;", "<")
             .Replace("&gt;", ">")
             .Replace("&quot;", "\"")
             .Replace("&apos;", "'")
+            .ToString()
             .Trim();
     }
 }

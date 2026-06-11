@@ -15,8 +15,6 @@ public static class MauiLocalization
     /// </summary>
     public static IServiceProvider? ServiceProvider { get; private set; }
 
-    private static ILocalizationProvider? _directProvider;
-
     /// <summary>
     /// Initializes MAUI localization with the specified service provider.
     /// </summary>
@@ -27,23 +25,12 @@ public static class MauiLocalization
     }
 
     /// <summary>
-    /// Initializes MAUI localization with the specified provider.
-    /// </summary>
-    /// <param name="provider">The provider to use.</param>
-    public static void Initialize(ILocalizationProvider provider)
-    {
-        _directProvider = provider;
-    }
-
-    /// <summary>
     /// Gets a localization provider from the dependency injection container by its key.
     /// </summary>
     /// <param name="key">The key of the provider. If null, the default provider is returned.</param>
     /// <returns>The <see cref="ILocalizationProvider"/> if found; otherwise, null.</returns>
     public static ILocalizationProvider? GetProvider(string? key = null)
     {
-        if (_directProvider != null) return _directProvider;
-
         if (ServiceProvider == null) return null;
 
         var resolver = ServiceProvider.GetService(typeof(ILocalizationProviderResolver)) as ILocalizationProviderResolver;
