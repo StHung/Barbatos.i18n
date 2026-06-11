@@ -7,11 +7,11 @@
   <PropertyGroup>
     <Authors>Pham The Hung</Authors>
     <Product>Barbatos.i18n</Product>
-    <CommonTags>dotNet;i18n;desktopapp;wpf;translation;localization;resources;json;ini;yaml</CommonTags>
+    <CommonTags>dotNet;i18n;cross-platform;maui;wpf;webapi;desktopapp;translation;localization;resources;json;ini;yaml;csv</CommonTags>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Copyright>(c) 2026 Pham The Hung and Barbatos.i18n Contributors. All rights reserved.</Copyright>
-    <Description>A modular and extensible localization (i18n) ecosystem for .NET and WPF. Independently evolved from lepoco.i18n, it features seamless Dependency Injection support and robust data providers for JSON, CSV, INI, YAML, and Resx formats, enabling dynamic, real-time UI translations.</Description>
+    <Description>A modular and extensible cross-platform localization (i18n) ecosystem for .NET (MAUI, WPF, WebApi, etc.). Independently evolved from lepoco.i18n, it features seamless Dependency Injection support and robust data providers for JSON, CSV, INI, YAML, and Resx formats, enabling dynamic, real-time translations.</Description>
     <PackageProjectUrl>https://github.com/StHung/Barbatos.i18n</PackageProjectUrl>
     <PackageReleaseNotes>https://github.com/StHung/Barbatos.i18n/releases</PackageReleaseNotes>
     <PackageIcon>Icon.png</PackageIcon>

@@ -54,6 +54,6 @@ public static class MauiProgram
         return builder
             .Build()
             .UseMauiLocalization()
-            .SetLocalizationCulture(new CultureInfo("vi-VN"));
+            .SetLocalizationCulture(CultureInfo.CurrentUICulture);
     }
 }

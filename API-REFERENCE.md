@@ -9,6 +9,7 @@ This document provides a comprehensive reference for the Barbatos.i18n library, 
 | **[`Barbatos.i18n`](#barbatosi18n-namespace)** | Contains the core localization interfaces, primitives, and builder configuration classes. |
 | **[`Barbatos.i18n.DependencyInjection`](#barbatosi18ndependencyinjection-namespace)** | Contains integration components for Microsoft.Extensions.DependencyInjection. |
 | **[`Barbatos.i18n.Wpf`](#barbatosi18nwpf-namespace)** | Contains XAML markup extensions and converters for Windows Presentation Foundation (WPF). |
+| **[`Barbatos.i18n.Maui`](#barbatosi18nmaui-namespace)** | Contains XAML markup extensions, converters, and initialization bridges for .NET MAUI. |
 | **[`Barbatos.i18n.Json`](#barbatosi18njson-namespace)** | Contains extensions to parse and load JSON files. |
 | **[`Barbatos.i18n.Ini`](#barbatosi18nini-namespace)** | Contains extensions to parse and load INI files. |
 | **[`Barbatos.i18n.Csv`](#barbatosi18ncsv-namespace)** | Contains extensions to parse and load CSV files. |
@@ -279,6 +280,33 @@ An `IValueConverter` designed to translate text bound from an `ItemsSource`. It 
 
 #### Remarks
 Use this converter inside `DataTemplate`s where `MarkupExtension`s cannot accept direct property bindings from the template context.
+
+---
+
+## `Barbatos.i18n.Maui` Namespace
+
+Provides XAML elements to bind localized strings dynamically in .NET MAUI applications. Its structure and XAML extensions are functionally identical to the `Barbatos.i18n.Wpf` namespace.
+
+### Classes
+
+| Class | Description |
+|-------|-------------|
+| `MauiLocalization` | Service Locator bridge for initializing DI within MAUI XAML. |
+| `StringLocalizerExtension` | The core `IMarkupExtension` (`{i18n:StringLocalizer}`) used in MAUI XAML. |
+| `PluralStringLocalizerExtension` | An `IMarkupExtension` (`{i18n:PluralStringLocalizer}`) for handling pluralization. |
+| `LocalizeConverter` | An `IValueConverter` for translating bound keys inside `DataTemplate`s. |
+
+### Extension Methods
+
+- **`UseStringLocalizer(this MauiAppBuilder builder, Action<LocalizationOptions>? optionsAction, Action<LocalizationBuilder> builderAction)`**
+  Registers the localization provider into the `MauiAppBuilder`'s service collection.
+
+- **`UseMauiLocalization(this MauiApp app)`**
+  Extracts the `IServiceProvider` from the built `MauiApp` and initializes `MauiLocalization.Initialize(...)` so that MAUI XAML Markup Extensions can resolve localizations at runtime. Returns an `ILocalizationCultureManager` to chain `SetLocalizationCulture`.
+
+### `MauiLocalization` Class
+
+Functions identically to `WpfLocalization` but tailored for the MAUI application lifecycle.
 
 ---
 

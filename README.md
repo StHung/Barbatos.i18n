@@ -5,7 +5,7 @@
 </div>
 
 <p align="center">
-    <strong>Add multilingual support to WPF, WinForms, or CLI apps efficiently. JSON, INI, CSV, YAML, and RESX resources with Dependency Injection.</strong>
+    <strong>Add cross-platform multilingual support to MAUI, WPF, WebApi, WinForms, or CLI apps efficiently. JSON, INI, CSV, YAML, and RESX resources with Dependency Injection.</strong>
 </p>
 
 <p align="center">
@@ -87,6 +87,11 @@ How you register localizations depends on whether you are using a Generic Host (
 
 #### Supported File Formats
 
+> [!IMPORTANT]
+> **Build Action Configuration**
+> 
+> No matter which file format you choose, you **must** set the file's **Build Action** to **`EmbeddedResource`** in your project's properties so that the library can read it at runtime.
+
 Barbatos.i18n is designed to read multiple structures. Below are examples of how each file format should be structured so that the library can parse them correctly into `LocalizationKey` and `string` pairs.
 
 ##### 1. JSON (`Locales.en-US.json`)
@@ -102,6 +107,11 @@ The library supports two versions of JSON formats. You must specify the `version
   }
 }
 ```
+
+**How to use these keys:**
+Nested structures are flattened. You can use either dot (`.`) or colon (`:`) separators.
+- **XAML:** `Text="{i18n:StringLocalizer Text='Errors.NetworkError'}"`
+- **C#:** `localizer["Errors.NetworkError"]` *(see Code-Behind section)*
 
 **Version 1.0** uses an explicit array of key-value pairs:
 ```json
@@ -127,6 +137,11 @@ GreetingWithName=Hello {0}
 NetworkError=Network failed to connect.
 ```
 
+**How to use these keys:**
+INI sections are flattened as prefixes. You can access them using dot or colon separators.
+- **XAML:** `Text="{i18n:StringLocalizer Text='errors.NetworkError'}"`
+- **C#:** `localizer["errors.NetworkError"]` *(see Code-Behind section)*
+
 ##### 3. CSV (`Locales.csv`)
 CSV files support two modes depending on the header row. The first column is always the `Key`.
 
@@ -144,6 +159,11 @@ MessageTitle,Hello from Code-Behind
 NetworkError,Network failed to connect.
 ```
 
+**How to use these keys:**
+CSV keys are accessed exactly as they appear in the `Key` column.
+- **XAML:** `Text="{i18n:StringLocalizer Text='NetworkError'}"`
+- **C#:** `localizer["NetworkError"]` *(see Code-Behind section)*
+
 ##### 4. YAML (`Locales.en-US.yaml`)
 YAML provides a clean, highly readable syntax. Similar to JSON, nested nodes become part of the key.
 ```yaml
@@ -152,6 +172,11 @@ GreetingWithName: Hello {0}
 Errors:
   NetworkError: Network failed to connect.
 ```
+
+**How to use these keys:**
+Like JSON, YAML nodes are flattened. Access nested keys using dots or colons.
+- **XAML:** `Text="{i18n:StringLocalizer Text='Errors.NetworkError'}"`
+- **C#:** `localizer["Errors.NetworkError"]` *(see Code-Behind section)*
 
 ##### 5. RESX (`Strings.en-US.resx`)
 Standard Microsoft `.resx` files are supported. These files must include the standard `<xsd:schema>` and `<resheader>` elements, along with your `<data>` pairs.
@@ -164,7 +189,12 @@ Standard Microsoft `.resx` files are supported. These files must include the sta
 </data>
 ```
 
-#### Example: Setup in `App.xaml.cs` (WPF with DI)
+**How to use these keys:**
+Keys match the `name` attribute directly.
+- **XAML:** `Text="{i18n:StringLocalizer Text='MessageContent', Arg='John'}"`
+- **C#:** `localizer["MessageContent", "John"]` *(see Code-Behind section)*
+
+#### 1. Setup in WPF (`App.xaml.cs`)
 
 ```csharp
 using System.Windows;
@@ -217,6 +247,73 @@ public partial class App : Application
 }
 ```
 
+> [!NOTE]
+> **Understanding `LocalizationOptions`**
+> 
+> The `options =>` block configures global settings. The most notable properties are:
+> 
+> **1. `SyncFormattingCulture` (bool)**
+> - If `true` (default), changing the language via Barbatos will also automatically change `CultureInfo.CurrentCulture` (which affects how numbers, currencies, and dates are formatted globally).
+> - If `false`, changing the language only updates `CultureInfo.CurrentUICulture` (which only affects translated strings), leaving your default number/date formats intact.
+> 
+> **2. `CustomFormattingCultureBuilder` (Func)**
+> - Allows you to finely tune the formatting culture dynamically when `SyncFormattingCulture` is `true`. This is useful if you want to customize specific properties, like `NumberFormat`, for all UI languages:
+> > ```csharp
+> > options.CustomFormattingCultureBuilder = uiCulture => 
+> > {
+> >     uiCulture.NumberFormat.NumberDecimalSeparator = ".";
+> >     uiCulture.NumberFormat.CurrencySymbol = "€";
+> >     return uiCulture;
+> > };
+> > ```
+
+> [!IMPORTANT]
+> **Initializing XAML and Setting the Default Language**
+> 
+> The initialization block above does two critical things:
+> 1. **`UseWpfLocalization()`**: Initializes an internal bridge that allows XAML `{i18n:...}` markup extensions to communicate with your registered `ILocalizationProvider`. Without this, your XAML bindings will silently fail.
+> 2. **`SetLocalizationCulture(...)`**: Tells the application which language to load and display at startup. Passing `CultureInfo.CurrentUICulture` automatically adapts your app to the user's operating system language. You can also force a specific language, e.g., `new CultureInfo("en-US")`.
+
+#### 2. Setup in MAUI (`MauiProgram.cs`)
+
+MAUI setup is very similar to WPF, except you use `UseStringLocalizer` directly on the `MauiAppBuilder` and `UseMauiLocalization` on the built `MauiApp`.
+
+```csharp
+using System.Globalization;
+using Barbatos.i18n.Json;
+using Barbatos.i18n.Maui;
+
+public static class MauiProgram
+{
+    public static MauiApp CreateMauiApp()
+    {
+        var builder = MauiApp.CreateBuilder();
+        builder.UseMauiApp<App>();
+
+        // 1. Register Providers on MauiAppBuilder
+        builder.UseStringLocalizer(options => 
+        {
+            options.SyncFormattingCulture = false; 
+        }, locBuilder =>
+        {
+            locBuilder.FromJson("Locales.Locales-en-US.json", new CultureInfo("en-US"));
+            locBuilder.FromJson("Locales.Locales-vi-VN.json", new CultureInfo("vi-VN"));
+        });
+
+        var app = builder.Build();
+
+        // 2. Initialize MAUI Localization and set default language
+        app.UseMauiLocalization()
+           .SetLocalizationCulture(CultureInfo.CurrentUICulture);
+
+        return app;
+    }
+}
+```
+
+> [!IMPORTANT]
+> The exact same initialization rules apply here: **`UseMauiLocalization()`** is required to bridge the providers to MAUI XAML `{i18n:...}` markup extensions, and **`SetLocalizationCulture(...)`** sets the default starting language.
+
 ### Template Syntax (XAML) & Bindings
 
 Barbatos.i18n provides powerful XAML markup extensions (`{i18n:StringLocalizer}`) that allow you to declaratively bind localized strings to your UI. It supports passing both static arguments (`Arg`) and dynamic view-model properties (`BindArg`).
@@ -267,6 +364,57 @@ public class HomeViewModel : ObservableObject
 
 <!-- Multiple Bound Arguments: "Welcome {0} {1}" -->
 <TextBlock Text="{i18n:StringLocalizer Text='GreetingWithFullName', BindArg={Binding FirstName}, BindArg2={Binding LastName}}" />
+```
+
+#### Pluralization (`PluralStringLocalizer`)
+
+When translating items that depend on a count (e.g. "1 apple" vs "5 apples"), use the plural extension:
+
+```xml
+<!-- Static Count -->
+<TextBlock Text="{i18n:PluralStringLocalizer Text='OneApple', PluralText='ManyApples', Count=5}" />
+
+<!-- Dynamic Bound Count -->
+<TextBlock Text="{i18n:PluralStringLocalizer Text='OneApple', PluralText='ManyApples', BindCount={Binding AppleCount}}" />
+```
+
+#### Custom Formatting (`StringFormat`)
+
+You can apply standard .NET `StringFormat` directly within the extension:
+
+```xml
+<TextBlock Text="{i18n:StringLocalizer Text='GreetingWithName', BindArg={Binding UserName}, StringFormat='[ {0} ]'}" />
+```
+
+#### Namespaces & Multiple Providers
+
+If you segmented your translations using namespaces or multiple provider keys during setup, you can access them specifically:
+
+```xml
+<!-- Accessing a specific Namespace -->
+<TextBlock Text="{i18n:StringLocalizer Text='NetworkError', Namespace='errors'}" />
+
+<!-- Accessing a specific Provider and Namespace -->
+<TextBlock Text="{i18n:StringLocalizer Text='BonusMessage', ProviderKey='SecondaryProvider', Namespace='extra'}" />
+```
+
+#### DataTemplates & ItemsControl (`LocalizeConverter`)
+
+In scenarios like `DataTemplate` where `MarkupExtension`s cannot accept direct bindings of the template's context (e.g. `Text="{Binding}"`), you must use the `LocalizeConverter`:
+
+```xml
+<Window.Resources>
+    <i18n:LocalizeConverter x:Key="LocalizeConverter" />
+</Window.Resources>
+
+<ItemsControl ItemsSource="{Binding Features}">
+    <ItemsControl.ItemTemplate>
+        <DataTemplate>
+            <!-- Translates the bound string automatically -->
+            <TextBlock Text="{Binding Converter={StaticResource LocalizeConverter}}" />
+        </DataTemplate>
+    </ItemsControl.ItemTemplate>
+</ItemsControl>
 ```
 
 ### Localization in Code-Behind (C#)
