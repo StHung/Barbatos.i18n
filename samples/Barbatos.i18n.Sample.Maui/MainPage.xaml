@@ -68,7 +68,7 @@
                        WidthRequest="200"
                        Placeholder="Name..." />
             </HorizontalStackLayout>
-            <Label Text="{i18n:StringLocalizer Text='GreetingWithName', BindArg={Binding UserName}}"
+            <Label Text="{i18n:StringLocalizer Text='GreetingWithName', BindArg={Binding UserName, StringFormat='\{0\} |˶˙ᵕ˙ )ﾉﾞ'}}"
                    TextColor="#107C10"
                    Margin="10,0,0,20" />
 

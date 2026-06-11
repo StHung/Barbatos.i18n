@@ -13,12 +13,14 @@ public sealed class StringLocalizerConverter : IMultiValueConverter
     public string Text { get; }
     public string? Namespace { get; }
     public string ProviderKey { get; }
+    private readonly string?[]? _stringFormats;
 
-    public StringLocalizerConverter(string text, string? textNamespace, string providerKey)
+    public StringLocalizerConverter(string text, string? textNamespace, string providerKey, string?[]? stringFormats = null)
     {
         Text = text;
         Namespace = textNamespace;
         ProviderKey = providerKey;
+        _stringFormats = stringFormats;
     }
 
     public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
@@ -43,10 +45,29 @@ public sealed class StringLocalizerConverter : IMultiValueConverter
             return Text;
         }
 
-        // Ignore UnsetValue to prevent formatting errors if bindings are not yet resolved
-        var formatValues = values.Select(v => v == DependencyProperty.UnsetValue ? string.Empty : v).ToArray();
+        // Apply StringFormat to individual values if provided
+        var formatValues = new object?[values.Length];
+        for (int i = 0; i < values.Length; i++)
+        {
+            var val = values[i];
+            if (val == DependencyProperty.UnsetValue)
+            {
+                formatValues[i] = string.Empty;
+                continue;
+            }
 
-        return localizationSet.Format(culture, Text, formatValues);
+            var format = _stringFormats is not null && i < _stringFormats.Length ? _stringFormats[i] : null;
+            if (!string.IsNullOrEmpty(format))
+            {
+                formatValues[i] = string.Format(currentCulture, format, val);
+            }
+            else
+            {
+                formatValues[i] = val;
+            }
+        }
+
+        return localizationSet.Format(culture, Text, formatValues) ?? string.Empty;
     }
 
     public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)

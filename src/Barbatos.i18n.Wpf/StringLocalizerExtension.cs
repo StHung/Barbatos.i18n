@@ -132,9 +132,18 @@ public class StringLocalizerExtension : MarkupExtension
 
         if (useBinding)
         {
+            var stringFormats = new string?[]
+            {
+                (BindArg as Binding)?.StringFormat,
+                (BindArg2 as Binding)?.StringFormat,
+                (BindArg3 as Binding)?.StringFormat,
+                (BindArg4 as Binding)?.StringFormat,
+                (BindArg5 as Binding)?.StringFormat
+            };
+
             var multiBinding = new MultiBinding
             {
-                Converter = new StringLocalizerConverter(Text, Namespace, ProviderKey),
+                Converter = new StringLocalizerConverter(Text, Namespace, ProviderKey, stringFormats),
                 StringFormat = StringFormat
             };
 
