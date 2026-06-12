@@ -12,6 +12,9 @@ using Barbatos.i18n.Ini;
 using Barbatos.i18n.Csv;
 using Barbatos.i18n.Json;
 using Barbatos.i18n.Yaml;
+using Barbatos.i18n.Mcp;
+using ModelContextProtocol;
+using System;
 
 namespace Barbatos.i18n.Sample.Wpf;
 
@@ -61,6 +64,16 @@ public partial class App : Application
             builder.FromJson("Locales.Extra-vi-VN.json", new CultureInfo("vi-VN"));
             builder.FromJson("Locales.Extra-ko-KR.json", new CultureInfo("ko-KR"));
         });
+
+        // Setup MCP Server with Localization Tools
+        services.AddMcpServer(options =>
+        {
+            options.ServerInfo = new ModelContextProtocol.Protocol.Implementation
+            {
+                Name = "Barbatos.i18n.Sample.Wpf.McpServer",
+                Version = "1.0.0"
+            };
+        }).AddLocalizationTools();
 
         ServiceProvider = services.BuildServiceProvider();
 
