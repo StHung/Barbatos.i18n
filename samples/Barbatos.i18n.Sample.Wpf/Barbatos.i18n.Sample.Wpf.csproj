@@ -7,10 +7,15 @@
     <ProjectReference Include="..\..\src\Barbatos.i18n.Csv\Barbatos.i18n.Csv.csproj" />
     <ProjectReference Include="..\..\src\Barbatos.i18n.Json\Barbatos.i18n.Json.csproj" />
     <ProjectReference Include="..\..\src\Barbatos.i18n.DependencyInjection\Barbatos.i18n.DependencyInjection.csproj" />
+    <ProjectReference Include="..\..\src\Barbatos.i18n.Mcp\Barbatos.i18n.Mcp.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.AI.OpenAI" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" />
+    <PackageReference Include="ModelContextProtocol" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -32,6 +37,12 @@
     <EmbeddedResource Include="Locales\**\*.json" />
     <EmbeddedResource Include="Locales\**\*.yaml" />
 
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>

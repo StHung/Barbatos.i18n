@@ -16,6 +16,14 @@
         <StackPanel Margin="20" HorizontalAlignment="Stretch" MaxWidth="600" VerticalAlignment="Top">
             <TextBlock Text="{i18n:StringLocalizer Text='Title'}" FontWeight="Bold" FontSize="22" Margin="0,0,0,20" HorizontalAlignment="Center"/>
 
+            <!-- Auto Translation Demo -->
+            <Border BorderBrush="Red" BorderThickness="2" Padding="10" Margin="0,0,0,20" CornerRadius="5" Background="#FFF0F0">
+                <StackPanel>
+                    <TextBlock Text="Auto-Translation Demo (Missing Key):" FontWeight="Bold" FontSize="16" Margin="0,0,0,10"/>
+                    <TextBlock Text="{i18n:StringLocalizer Text='MissingKeyDemo123', DefaultText='I am missing, I will be translated by AI', Context='Test string for AI translation'}" FontWeight="Bold" Foreground="Red" FontSize="16"/>
+                </StackPanel>
+            </Border>
+
             <Button Command="{Binding ShowMessageCommand}" Content="Show Localized MessageBox" Width="250" Padding="10" Margin="0,0,0,30" HorizontalAlignment="Center" Cursor="Hand" Background="#0078D7" Foreground="White" FontWeight="Bold" BorderThickness="0" />
 
             <!-- Switch Language -->

@@ -57,4 +57,9 @@ public interface ILocalizationProvider
     /// <param name="culture">The culture to filter localization sets by.</param>
     /// <returns>A collection of localization sets matching the specified culture.</returns>
     IEnumerable<LocalizationSet> GetLocalizationSets(CultureInfo culture);
+
+    /// <summary>
+    /// Occurs when a missing localization key has been automatically translated and added.
+    /// </summary>
+    event EventHandler<LocalizationKeyTranslatedEventArgs>? OnKeyTranslated;
 }

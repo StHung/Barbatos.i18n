@@ -1,7 +1,7 @@
 <Solution>
   <Folder Name="/samples/">
-    <Project Path="samples/Barbatos.i18n.Sample.WebApi/Barbatos.i18n.Sample.WebApi.csproj" />
     <Project Path="samples/Barbatos.i18n.Sample.Maui/Barbatos.i18n.Sample.Maui.csproj" />
+    <Project Path="samples/Barbatos.i18n.Sample.WebApi/Barbatos.i18n.Sample.WebApi.csproj" />
     <Project Path="samples/Barbatos.i18n.Sample.Wpf/Barbatos.i18n.Sample.Wpf.csproj" />
   </Folder>
   <Folder Name="/Solution Items/">
@@ -19,6 +19,9 @@
     <Project Path="src/Barbatos.i18n.Ini/Barbatos.i18n.Ini.csproj" />
     <Project Path="src/Barbatos.i18n.Json/Barbatos.i18n.Json.csproj" />
     <Project Path="src/Barbatos.i18n.Maui/Barbatos.i18n.Maui.csproj" />
+    <Project Path="src/Barbatos.i18n.Mcp/Barbatos.i18n.Mcp.csproj">
+      <Build Solution="Debug|*" Project="false" />
+    </Project>
     <Project Path="src/Barbatos.i18n.Wpf/Barbatos.i18n.Wpf.csproj" />
     <Project Path="src/Barbatos.i18n/Barbatos.i18n.csproj" />
   </Folder>
@@ -27,6 +30,9 @@
     <Project Path="tests/Barbatos.i18n.DependencyInjection.UnitTests/Barbatos.i18n.DependencyInjection.UnitTests.csproj" />
     <Project Path="tests/Barbatos.i18n.Ini.UnitTests/Barbatos.i18n.Ini.UnitTests.csproj" />
     <Project Path="tests/Barbatos.i18n.Json.UnitTests/Barbatos.i18n.Json.UnitTests.csproj" />
+    <Project Path="tests/Barbatos.i18n.Mcp.UnitTests/Barbatos.i18n.Mcp.UnitTests.csproj">
+      <Build Solution="Debug|*" Project="false" />
+    </Project>
     <Project Path="tests/Barbatos.i18n.UnitTests/Barbatos.i18n.UnitTests.csproj" />
   </Folder>
 </Solution>

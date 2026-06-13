@@ -119,8 +119,36 @@ public class PluralStringLocalizerExtension : MarkupExtension
 
         string? selectedNamespace = Namespace?.ToLowerInvariant() ?? null;
 
-        LocalizationSet? localizationSet = WpfLocalization.GetProvider(ProviderKey)?.GetLocalizationSet(currentCulture, selectedNamespace)
-            ?? LocalizationProviderFactory.GetInstance(ProviderKey)?.GetLocalizationSet(currentCulture, selectedNamespace);
+        ILocalizationProvider? provider = WpfLocalization.GetProvider(ProviderKey) ?? LocalizationProviderFactory.GetInstance(ProviderKey);
+        LocalizationSet? localizationSet = null;
+
+        if (provider != null)
+        {
+            if (selectedNamespace != null)
+            {
+                localizationSet = provider.GetLocalizationSet(currentCulture, selectedNamespace);
+            }
+            else
+            {
+                var sets = provider.GetLocalizationSets(currentCulture);
+                foreach (var set in sets)
+                {
+                    bool hasSingular = !string.IsNullOrEmpty(Text) && set[new LocalizationKey(Text!)] != null;
+                    bool hasPlural = !string.IsNullOrEmpty(PluralText) && set[new LocalizationKey(PluralText!)] != null;
+                    
+                    if (hasSingular || hasPlural)
+                    {
+                        localizationSet = set;
+                        break;
+                    }
+                }
+
+                if (localizationSet == null)
+                {
+                    localizationSet = provider.GetLocalizationSet(currentCulture, null);
+                }
+            }
+        }
 
         if (localizationSet is null)
         {

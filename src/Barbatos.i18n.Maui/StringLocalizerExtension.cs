@@ -47,6 +47,16 @@ public class StringLocalizerExtension : IMarkupExtension<BindingBase>
     public string? Namespace { get; set; }
 
     /// <summary>
+    /// Gets or sets the default text to display if the localization key is missing.
+    /// </summary>
+    public string? DefaultText { get; set; }
+
+    /// <summary>
+    /// Gets or sets the context of where this key is used, helping the auto-translator understand the meaning.
+    /// </summary>
+    public string? Context { get; set; }
+
+    /// <summary>
     /// Provider key.
     /// </summary>
     public string ProviderKey { get; set; } = string.Empty;
@@ -151,17 +161,59 @@ public class StringLocalizerExtension : IMarkupExtension<BindingBase>
         LocalizationSet? localizationSet = MauiLocalization.GetProvider(ProviderKey)?.GetLocalizationSet(currentCulture, selectedNamespace)
             ?? LocalizationProviderFactory.GetInstance(ProviderKey)?.GetLocalizationSet(currentCulture, selectedNamespace);
 
-        string result = EscapeText(Text) ?? string.Empty;
-        if (localizationSet is not null && Text is not null)
-        {
-            List<object?>? args = null;
-            if (Arg is not null) { args ??= new List<object?>(); args.Add(Arg); }
-            if (Arg2 is not null) { args ??= new List<object?>(); args.Add(Arg2); }
-            if (Arg3 is not null) { args ??= new List<object?>(); args.Add(Arg3); }
-            if (Arg4 is not null) { args ??= new List<object?>(); args.Add(Arg4); }
-            if (Arg5 is not null) { args ??= new List<object?>(); args.Add(Arg5); }
+        string result = EscapeText(DefaultText ?? Text) ?? string.Empty;
 
-            result = localizationSet.Format(currentCulture, (LocalizationKey)Text, args?.ToArray() ?? null) ?? EscapeText(Text) ?? string.Empty;
+        List<object?>? args = null;
+        if (Arg is not null) { args ??= new List<object?>(); args.Add(Arg); }
+        if (Arg2 is not null) { args ??= new List<object?>(); args.Add(Arg2); }
+        if (Arg3 is not null) { args ??= new List<object?>(); args.Add(Arg3); }
+        if (Arg4 is not null) { args ??= new List<object?>(); args.Add(Arg4); }
+        if (Arg5 is not null) { args ??= new List<object?>(); args.Add(Arg5); }
+
+        if (Text is not null && (localizationSet is null || localizationSet[new LocalizationKey(Text)] is null))
+        {
+            string formattedFallback = result;
+            if (args is not null)
+            {
+                try { formattedFallback = string.Format(currentCulture, formattedFallback, args.ToArray()); } catch { }
+            }
+
+            if (serviceProvider.GetService(typeof(IProvideValueTarget)) is IProvideValueTarget target)
+            {
+                var targetObject = target.TargetObject as BindableObject;
+                var targetProperty = target.TargetProperty as BindableProperty;
+
+                if (targetObject != null && targetProperty != null)
+                {
+                    var autoTranslationService = MauiLocalization.ServiceProvider?.GetService(typeof(IAutoTranslationService)) as IAutoTranslationService;
+                    if (autoTranslationService != null)
+                    {
+                        Task.Run(async () =>
+                        {
+                            var translated = await autoTranslationService.TranslateAndSaveAsync(ProviderKey, Text, DefaultText, Context, currentCulture, args?.ToArray());
+                            if (translated != null)
+                            {
+                                string formattedTranslated = translated;
+                                if (args is not null)
+                                {
+                                    try { formattedTranslated = string.Format(currentCulture, formattedTranslated, args.ToArray()); } catch { }
+                                }
+
+                                targetObject.Dispatcher.Dispatch(() =>
+                                {
+                                    targetObject.SetValue(targetProperty, formattedTranslated);
+                                });
+                            }
+                        });
+                    }
+                }
+            }
+
+            result = formattedFallback;
+        }
+        else if (localizationSet is not null && Text is not null)
+        {
+            result = localizationSet.Format(currentCulture, (LocalizationKey)Text, args?.ToArray() ?? null) ?? result;
         }
 
         if (StringFormat is not null)
