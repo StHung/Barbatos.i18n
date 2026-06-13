@@ -48,4 +48,15 @@ public class LocalizationProvider(
     /// <inheritdoc />
     public IEnumerable<LocalizationSet> GetLocalizationSets(CultureInfo culture) =>
         _localizationSets.Where(s => s.Culture.Equals(culture));
+
+    /// <inheritdoc />
+    public event EventHandler<LocalizationKeyTranslatedEventArgs>? OnKeyTranslated;
+
+    /// <summary>
+    /// Raises the OnKeyTranslated event.
+    /// </summary>
+    public void RaiseKeyTranslated(CultureInfo culture, LocalizationKey key, string? value)
+    {
+        OnKeyTranslated?.Invoke(this, new LocalizationKeyTranslatedEventArgs(culture, key, value));
+    }
 }

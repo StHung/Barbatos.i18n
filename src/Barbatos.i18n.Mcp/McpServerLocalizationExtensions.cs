@@ -21,64 +21,19 @@ public static class McpServerLocalizationExtensions
     /// <returns>The MCP server builder.</returns>
     public static IMcpServerBuilder AddLocalizationTools(this IMcpServerBuilder builder)
     {
-        var readTranslationToolDelegate = async (string key, string culture) => {
-            var provider = LocalizationProviderFactory.GetInstance();
-            if (provider == null)
-            {
-                return $"Error: LocalizationProvider is not initialized.";
-            }
-
-            var cultureInfo = new System.Globalization.CultureInfo(culture);
-            var sets = provider.GetLocalizationSets(cultureInfo);
-
-            if (sets == null || !sets.Any())
-            {
-                return $"Error: Culture '{culture}' not found.";
-            }
-
-            var locKey = new LocalizationKey(key);
-            foreach (var set in sets)
-            {
-                var value = set[locKey];
-                if (value != null)
-                {
-                    return value;
-                }
-            }
-
-            return $"Error: Key '{key}' not found for culture '{culture}'.";
-        };
-
-        var getCulturesToolDelegate = async () => {
-             var provider = LocalizationProviderFactory.GetInstance();
-             if (provider == null) return "Error: LocalizationProvider is not initialized.";
-
-             var sets = provider.GetLocalizationSets();
-             var cultures = sets.Select(s => s.Culture.Name).Distinct().ToList();
-             return string.Join(", ", cultures);
-        };
-
-        var automateTranslationToolDelegate = async (string content, string sourceCulture, string targetCulture) => {
-            await Task.CompletedTask;
-            // The library currently provides runtime read access to localization resources.
-            // Writing/updating translations (e.g. database, files, API) requires host application implementation.
-            // This tool serves as a stub for an LLM to propose translations, which the client can then process.
-            return $"Instruction for LLM: Please translate the following content from {sourceCulture} to {targetCulture}. Content: {content}";
-        };
-
-        var readTranslationTool = McpServerTool.Create(readTranslationToolDelegate, new McpServerToolCreateOptions
+        var readTranslationTool = McpServerTool.Create(ReadTranslationToolAsync, new McpServerToolCreateOptions
         {
             Name = "GetTranslation",
             Description = "Reads an existing translation from the Barbatos.i18n engine. Provide the key and culture (e.g. 'en-US', 'vi-VN')."
         });
 
-        var getCulturesTool = McpServerTool.Create(getCulturesToolDelegate, new McpServerToolCreateOptions
+        var getCulturesTool = McpServerTool.Create(GetCulturesToolAsync, new McpServerToolCreateOptions
         {
             Name = "GetAvailableCultures",
             Description = "Returns a list of available cultures registered in the Barbatos.i18n engine."
         });
 
-        var automateTranslationTool = McpServerTool.Create(automateTranslationToolDelegate, new McpServerToolCreateOptions
+        var automateTranslationTool = McpServerTool.Create(AutomateTranslationToolAsync, new McpServerToolCreateOptions
         {
             Name = "AutomateTranslation",
             Description = "Requests a translation of dynamic content from the AI model."
@@ -88,4 +43,51 @@ public static class McpServerLocalizationExtensions
 
         return builder;
     }
+
+    internal static async Task<string> ReadTranslationToolAsync(string key, string culture)
+    {
+        var provider = LocalizationProviderFactory.GetInstance();
+        if (provider == null)
+        {
+            return $"Error: LocalizationProvider is not initialized.";
+        }
+
+        var cultureInfo = new System.Globalization.CultureInfo(culture);
+        var sets = provider.GetLocalizationSets(cultureInfo);
+
+        if (sets == null || !sets.Any())
+        {
+            return $"Error: Culture '{culture}' not found.";
+        }
+
+        var locKey = new LocalizationKey(key);
+        foreach (var set in sets)
+        {
+            var value = set[locKey];
+            if (value != null)
+            {
+                return value;
+            }
+        }
+
+        return $"Error: Key '{key}' not found for culture '{culture}'.";
+    }
+
+    internal static async Task<string> GetCulturesToolAsync()
+    {
+         var provider = LocalizationProviderFactory.GetInstance();
+         if (provider == null) return "Error: LocalizationProvider is not initialized.";
+
+         var sets = provider.GetLocalizationSets();
+         var cultures = sets.Select(s => s.Culture.Name).Distinct().ToList();
+         return string.Join(", ", cultures);
+    }
+
+    internal static async Task<string> AutomateTranslationToolAsync(string content, string sourceCulture, string targetCulture)
+    {
+        await Task.CompletedTask;
+        return $"Instruction for LLM: Please translate the following content from {sourceCulture} to {targetCulture}. Content: {content}";
+    }
 }
+
+

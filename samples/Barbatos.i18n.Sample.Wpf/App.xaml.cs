@@ -12,9 +12,8 @@ using Barbatos.i18n.Ini;
 using Barbatos.i18n.Csv;
 using Barbatos.i18n.Json;
 using Barbatos.i18n.Yaml;
-using Barbatos.i18n.Mcp;
-using ModelContextProtocol;
-using System;
+using Microsoft.Extensions.AI;
+using Microsoft.Extensions.Configuration;
 
 namespace Barbatos.i18n.Sample.Wpf;
 
@@ -65,15 +64,62 @@ public partial class App : Application
             builder.FromJson("Locales.Extra-ko-KR.json", new CultureInfo("ko-KR"));
         });
 
-        // Setup MCP Server with Localization Tools
-        services.AddMcpServer(options =>
+
+
+        var configBuilder = new Microsoft.Extensions.Configuration.ConfigurationBuilder()
+            .SetBasePath(AppContext.BaseDirectory)
+            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+
+        var configuration = configBuilder.Build();
+
+        string? apiKey = configuration["AI:ApiKey"];
+        if (string.IsNullOrWhiteSpace(apiKey))
         {
-            options.ServerInfo = new ModelContextProtocol.Protocol.Implementation
+            apiKey = Environment.GetEnvironmentVariable("AI_API_KEY", EnvironmentVariableTarget.User) 
+                ?? Environment.GetEnvironmentVariable("AI_API_KEY")
+                ?? Environment.GetEnvironmentVariable("OPENAI_API_KEY"); // keep backward compatibility
+        }
+
+        string modelId = configuration["AI:ModelId"] ?? "gpt-4o-mini";
+        string provider = configuration["AI:Provider"] ?? "OpenAI";
+
+        if (string.IsNullOrWhiteSpace(apiKey) && !provider.Equals("Ollama", StringComparison.OrdinalIgnoreCase))
+        {
+            throw new Barbatos.i18n.Mcp.McpRegistrationException("AI API Key is missing. Please configure 'AI:ApiKey' in appsettings.json or set the 'AI_API_KEY' environment variable before running the application.");
+        }
+
+        OpenAI.Chat.ChatClient openAiChatClient;
+        if (provider.Equals("Gemini", StringComparison.OrdinalIgnoreCase))
+        {
+            var options = new OpenAI.OpenAIClientOptions
             {
-                Name = "Barbatos.i18n.Sample.Wpf.McpServer",
-                Version = "1.0.0"
+                Endpoint = new Uri("https://generativelanguage.googleapis.com/v1beta/openai/")
             };
-        }).AddLocalizationTools();
+            openAiChatClient = new OpenAI.Chat.ChatClient(modelId, new System.ClientModel.ApiKeyCredential(apiKey), options);
+        }
+        else if (provider.Equals("Ollama", StringComparison.OrdinalIgnoreCase))
+        {
+            var options = new OpenAI.OpenAIClientOptions
+            {
+                Endpoint = new Uri("http://localhost:11434/v1/")
+            };
+            // Ollama does not require a real API key, but the OpenAI client requires a non-empty string.
+            string ollamaKey = string.IsNullOrWhiteSpace(apiKey) ? "ollama-local" : apiKey;
+            openAiChatClient = new OpenAI.Chat.ChatClient(modelId, new System.ClientModel.ApiKeyCredential(ollamaKey), options);
+        }
+        else
+        {
+            openAiChatClient = new OpenAI.Chat.ChatClient(modelId, apiKey);
+        }
+
+        services.AddSingleton<Microsoft.Extensions.AI.IChatClient>(openAiChatClient.AsIChatClient());
+        
+        services.AddAIAutoTranslation();
+
+        // Register writer to save directly to the Project Source folder (so changes are not lost on rebuild)
+        string projectDir = System.IO.Path.GetFullPath(System.IO.Path.Combine(AppContext.BaseDirectory, "../../../.."));
+        string localesDir = System.IO.Path.Combine(projectDir, "Locales");
+        services.AddSingleton<Barbatos.i18n.ILocalizationResourceWriter>(new Barbatos.i18n.Json.JsonLocalizationWriter(localesDir));
 
         ServiceProvider = services.BuildServiceProvider();
 

@@ -27,9 +27,14 @@ public static class LocalizationProviderFactory
     /// Gets the current instance of the <see cref="ILocalizationProvider"/>.
     /// </summary>
     /// <returns>The current instance of the <see cref="ILocalizationProvider"/>, or null if no instance has been set.</returns>
-    public static ILocalizationProvider? GetInstance(string key)
+    public static ILocalizationProvider? GetInstance(string? key)
     {
-        _ = _instances.TryGetValue(key, out ILocalizationProvider instance);
+        if (key is null)
+        {
+            key = string.Empty;
+        }
+
+        _ = _instances.TryGetValue(key, out ILocalizationProvider? instance);
 
         return instance;
     }
@@ -47,8 +52,12 @@ public static class LocalizationProviderFactory
     /// Sets the current instance of the <see cref="ILocalizationProvider"/>.
     /// </summary>
     /// <param name="provider">The <see cref="ILocalizationProvider"/> to set as the current instance.</param>
-    public static void SetInstance(ILocalizationProvider provider, string key)
+    public static void SetInstance(ILocalizationProvider provider, string? key)
     {
+        if (key is null)
+        {
+            key = string.Empty;
+        }
         _ = _instances.AddOrUpdate(key, provider, (_, _) => provider);
     }
 }

@@ -19,4 +19,8 @@
     <ProjectReference Include="..\Barbatos.i18n\Barbatos.i18n.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Barbatos.i18n.Mcp.UnitTests" />
+  </ItemGroup>
+
 </Project>

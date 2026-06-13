@@ -17,10 +17,22 @@ public record LocalizationSet(
     IEnumerable<KeyValuePair<LocalizationKey, string?>> Strings
 )
 {
+    private readonly System.Collections.Concurrent.ConcurrentDictionary<LocalizationKey, string?> _runtimeStrings = new();
+
+    public void AddOrUpdateString(LocalizationKey key, string? value)
+    {
+        _runtimeStrings[key] = value;
+    }
+
     public string? this[LocalizationKey key]
     {
         get
         {
+            if (_runtimeStrings.TryGetValue(key, out var val))
+            {
+                return val;
+            }
+
             foreach (KeyValuePair<LocalizationKey, string?> localizationString in Strings)
             {
                 if (localizationString.Key == key)

@@ -55,6 +55,16 @@ public class StringLocalizerExtension : MarkupExtension
     public string? Namespace { get; set; }
 
     /// <summary>
+    /// Gets or sets the default text to display if the localization key is missing.
+    /// </summary>
+    public string? DefaultText { get; set; }
+
+    /// <summary>
+    /// Gets or sets the context of where this key is used, helping the auto-translator understand the meaning.
+    /// </summary>
+    public string? Context { get; set; }
+
+    /// <summary>
     /// Provider key.
     /// </summary>
     public string ProviderKey { get; set; } = string.Empty;
@@ -128,41 +138,6 @@ public class StringLocalizerExtension : MarkupExtension
 
         bool useBinding = BindArg is not null || BindArg2 is not null || BindArg3 is not null || BindArg4 is not null || BindArg5 is not null;
 
-        if (useBinding)
-        {
-            var stringFormats = new string?[]
-            {
-                (BindArg as Binding)?.StringFormat,
-                (BindArg2 as Binding)?.StringFormat,
-                (BindArg3 as Binding)?.StringFormat,
-                (BindArg4 as Binding)?.StringFormat,
-                (BindArg5 as Binding)?.StringFormat
-            };
-
-            var multiBinding = new MultiBinding
-            {
-                Converter = new StringLocalizerConverter(Text, Namespace, ProviderKey, stringFormats),
-                StringFormat = StringFormat
-            };
-
-            if (BindArg is not null) multiBinding.Bindings.Add(BindArg);
-            else if (Arg is not null) multiBinding.Bindings.Add(new Binding { Source = Arg });
-
-            if (BindArg2 is not null) multiBinding.Bindings.Add(BindArg2);
-            else if (Arg2 is not null) multiBinding.Bindings.Add(new Binding { Source = Arg2 });
-
-            if (BindArg3 is not null) multiBinding.Bindings.Add(BindArg3);
-            else if (Arg3 is not null) multiBinding.Bindings.Add(new Binding { Source = Arg3 });
-
-            if (BindArg4 is not null) multiBinding.Bindings.Add(BindArg4);
-            else if (Arg4 is not null) multiBinding.Bindings.Add(new Binding { Source = Arg4 });
-
-            if (BindArg5 is not null) multiBinding.Bindings.Add(BindArg5);
-            else if (Arg5 is not null) multiBinding.Bindings.Add(new Binding { Source = Arg5 });
-
-            return multiBinding.ProvideValue(serviceProvider);
-        }
-
         CultureInfo currentCulture =
             WpfLocalization.GetProvider(ProviderKey)?.GetCulture()
             ?? LocalizationProviderFactory.GetInstance(ProviderKey)?.GetCulture()
@@ -170,12 +145,32 @@ public class StringLocalizerExtension : MarkupExtension
 
         string? selectedNamespace = Namespace?.ToLowerInvariant() ?? null;
 
-        LocalizationSet? localizationSet = WpfLocalization.GetProvider(ProviderKey)?.GetLocalizationSet(currentCulture, selectedNamespace)
-            ?? LocalizationProviderFactory.GetInstance(ProviderKey)?.GetLocalizationSet(currentCulture, selectedNamespace);
+        ILocalizationProvider? provider = WpfLocalization.GetProvider(ProviderKey) ?? LocalizationProviderFactory.GetInstance(ProviderKey);
+        LocalizationSet? localizationSet = null;
 
-        if (localizationSet is null)
+        if (provider != null)
         {
-            return Text;
+            if (selectedNamespace != null)
+            {
+                localizationSet = provider.GetLocalizationSet(currentCulture, selectedNamespace);
+            }
+            else
+            {
+                var sets = provider.GetLocalizationSets(currentCulture);
+                foreach (var set in sets)
+                {
+                    if (set[new LocalizationKey(Text)] != null)
+                    {
+                        localizationSet = set;
+                        break;
+                    }
+                }
+
+                if (localizationSet == null)
+                {
+                    localizationSet = provider.GetLocalizationSet(currentCulture, null);
+                }
+            }
         }
 
         List<object?>? args = null;
@@ -210,7 +205,115 @@ public class StringLocalizerExtension : MarkupExtension
             args.Add(Arg5);
         }
 
-        string result = localizationSet.Format(currentCulture, Text, args?.ToArray() ?? null);
+        bool isMissing = localizationSet is null || localizationSet[new LocalizationKey(Text)] is null;
+        
+        if (isMissing)
+        {
+            if (serviceProvider.GetService(typeof(System.Windows.Markup.IProvideValueTarget)) is System.Windows.Markup.IProvideValueTarget target)
+            {
+                var targetObject = target.TargetObject as DependencyObject;
+                var targetProperty = target.TargetProperty as DependencyProperty;
+
+                if (targetObject != null && targetProperty != null)
+                {
+                    var autoTranslationService = WpfLocalization.ServiceProvider?.GetService(typeof(IAutoTranslationService)) as IAutoTranslationService;
+                    if (autoTranslationService != null)
+                    {
+                        _ = System.Threading.Tasks.Task.Run(async () =>
+                        {
+                            var translated = await autoTranslationService.TranslateAndSaveAsync(ProviderKey, Text, DefaultText, Context, currentCulture, args?.ToArray());
+                            if (translated != null)
+                            {
+                                targetObject.Dispatcher.InvokeAsync(() =>
+                                {
+                                    try
+                                    {
+                                        System.IO.File.AppendAllText(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "AI_Translation_Log.txt"), $"[Dispatcher] Updating {targetObject.GetType().Name}.{targetProperty.Name} (useBinding={useBinding})\n");
+                                        if (useBinding)
+                                        {
+                                            var expr = System.Windows.Data.BindingOperations.GetMultiBindingExpression(targetObject, targetProperty);
+                                            System.IO.File.AppendAllText(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "AI_Translation_Log.txt"), $"[Dispatcher] expr is null? {expr == null}\n");
+                                            expr?.UpdateTarget();
+                                        }
+                                        else
+                                        {
+                                            string formattedTranslated = translated;
+                                            if (args is not null)
+                                            {
+                                                try { formattedTranslated = string.Format(currentCulture, formattedTranslated, args.ToArray()); } catch { }
+                                            }
+                                            if (StringFormat is not null)
+                                            {
+                                                try { formattedTranslated = string.Format(currentCulture, StringFormat, formattedTranslated); } catch { }
+                                            }
+                                            targetObject.SetValue(targetProperty, formattedTranslated);
+                                            System.IO.File.AppendAllText(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "AI_Translation_Log.txt"), $"[Dispatcher] SetValue called with '{formattedTranslated}'\n");
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        System.IO.File.AppendAllText(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "AI_Translation_Error.log"), $"[Dispatcher Exception]: {ex.Message}\n");
+                                    }
+                                });
+                            }
+                        });
+                    }
+                }
+            }
+        }
+
+        if (useBinding)
+        {
+            var stringFormats = new string?[]
+            {
+                (BindArg as Binding)?.StringFormat,
+                (BindArg2 as Binding)?.StringFormat,
+                (BindArg3 as Binding)?.StringFormat,
+                (BindArg4 as Binding)?.StringFormat,
+                (BindArg5 as Binding)?.StringFormat
+            };
+
+            var multiBinding = new MultiBinding
+            {
+                Converter = new StringLocalizerConverter(Text, Namespace, ProviderKey, stringFormats, DefaultText, Context),
+                StringFormat = StringFormat
+            };
+
+            if (BindArg is not null) multiBinding.Bindings.Add(BindArg);
+            else if (Arg is not null) multiBinding.Bindings.Add(new Binding { Source = Arg });
+
+            if (BindArg2 is not null) multiBinding.Bindings.Add(BindArg2);
+            else if (Arg2 is not null) multiBinding.Bindings.Add(new Binding { Source = Arg2 });
+
+            if (BindArg3 is not null) multiBinding.Bindings.Add(BindArg3);
+            else if (Arg3 is not null) multiBinding.Bindings.Add(new Binding { Source = Arg3 });
+
+            if (BindArg4 is not null) multiBinding.Bindings.Add(BindArg4);
+            else if (Arg4 is not null) multiBinding.Bindings.Add(new Binding { Source = Arg4 });
+
+            if (BindArg5 is not null) multiBinding.Bindings.Add(BindArg5);
+            else if (Arg5 is not null) multiBinding.Bindings.Add(new Binding { Source = Arg5 });
+
+            return multiBinding.ProvideValue(serviceProvider);
+        }
+
+        if (isMissing)
+        {
+            string fallbackText = DefaultText ?? Text;
+            
+            string formattedFallback = fallbackText;
+            if (args is not null)
+            {
+                try { formattedFallback = string.Format(currentCulture, formattedFallback, args.ToArray()); } catch { }
+            }
+            if (StringFormat is not null)
+            {
+                try { formattedFallback = string.Format(currentCulture, StringFormat, formattedFallback); } catch { }
+            }
+            return formattedFallback;
+        }
+
+        string result = localizationSet!.Format(currentCulture, Text, args?.ToArray() ?? null)!;
         if (StringFormat is not null)
         {
             return string.Format(StringFormat, result);

@@ -26,13 +26,18 @@ public sealed class StringLocalizerConverter : IMultiValueConverter
     /// Provider key.
     /// </summary>
     public string ProviderKey { get; }
+    
+    public string? DefaultText { get; }
+    public string? Context { get; }
 
-    public StringLocalizerConverter(string text, string? textNamespace, string providerKey, string?[]? stringFormats = null)
+    public StringLocalizerConverter(string text, string? textNamespace, string providerKey, string?[]? stringFormats = null, string? defaultText = null, string? context = null)
     {
         Text = text;
         Namespace = textNamespace;
         ProviderKey = providerKey;
         _stringFormats = stringFormats;
+        DefaultText = defaultText;
+        Context = context;
     }
 
     public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
@@ -49,12 +54,37 @@ public sealed class StringLocalizerConverter : IMultiValueConverter
 
         string? selectedNamespace = Namespace?.ToLowerInvariant();
 
-        LocalizationSet? localizationSet = WpfLocalization.GetProvider(ProviderKey)?.GetLocalizationSet(currentCulture, selectedNamespace)
-            ?? LocalizationProviderFactory.GetInstance(ProviderKey)?.GetLocalizationSet(currentCulture, selectedNamespace);
+        ILocalizationProvider? provider = WpfLocalization.GetProvider(ProviderKey) ?? LocalizationProviderFactory.GetInstance(ProviderKey);
+        LocalizationSet? localizationSet = null;
+
+        if (provider != null)
+        {
+            if (selectedNamespace != null)
+            {
+                localizationSet = provider.GetLocalizationSet(currentCulture, selectedNamespace);
+            }
+            else
+            {
+                var sets = provider.GetLocalizationSets(currentCulture);
+                foreach (var set in sets)
+                {
+                    if (set[new LocalizationKey(Text)] != null)
+                    {
+                        localizationSet = set;
+                        break;
+                    }
+                }
+
+                if (localizationSet == null)
+                {
+                    localizationSet = provider.GetLocalizationSet(currentCulture, null);
+                }
+            }
+        }
 
         if (localizationSet is null)
         {
-            return StringLocalizerExtension.EscapeText(Text);
+            return DefaultText ?? StringLocalizerExtension.EscapeText(Text);
         }
 
         // Apply StringFormat to individual values if provided
@@ -79,7 +109,7 @@ public sealed class StringLocalizerConverter : IMultiValueConverter
             }
         }
 
-        return localizationSet.Format(culture, Text, formatValues) ?? StringLocalizerExtension.EscapeText(Text);
+        return localizationSet.Format(culture, Text, formatValues) ?? DefaultText ?? StringLocalizerExtension.EscapeText(Text);
     }
 
     /// <summary>

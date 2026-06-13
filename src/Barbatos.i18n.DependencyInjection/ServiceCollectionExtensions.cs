@@ -115,4 +115,16 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
+
+    /// <summary>
+    /// Adds the AI Auto Translation service to the dependency injection container.
+    /// Requires an <see cref="Microsoft.Extensions.AI.IChatClient"/> to be registered in the container.
+    /// </summary>
+    /// <param name="services">The service collection.</param>
+    /// <returns>The service collection.</returns>
+    public static IServiceCollection AddAIAutoTranslation(this IServiceCollection services)
+    {
+        services.AddSingleton<IAutoTranslationService, AIAutoTranslationService>();
+        return services;
+    }
 }

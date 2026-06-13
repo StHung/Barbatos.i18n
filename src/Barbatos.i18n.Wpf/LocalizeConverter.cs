@@ -38,8 +38,33 @@ public sealed class LocalizeConverter : IValueConverter
 
         string? selectedNamespace = Namespace?.ToLowerInvariant();
 
-        LocalizationSet? localizationSet = WpfLocalization.GetProvider(ProviderKey)?.GetLocalizationSet(currentCulture, selectedNamespace)
-            ?? LocalizationProviderFactory.GetInstance(ProviderKey)?.GetLocalizationSet(currentCulture, selectedNamespace);
+        ILocalizationProvider? provider = WpfLocalization.GetProvider(ProviderKey) ?? LocalizationProviderFactory.GetInstance(ProviderKey);
+        LocalizationSet? localizationSet = null;
+
+        if (provider != null)
+        {
+            if (selectedNamespace != null)
+            {
+                localizationSet = provider.GetLocalizationSet(currentCulture, selectedNamespace);
+            }
+            else
+            {
+                var sets = provider.GetLocalizationSets(currentCulture);
+                foreach (var set in sets)
+                {
+                    if (set[new LocalizationKey(key)] != null)
+                    {
+                        localizationSet = set;
+                        break;
+                    }
+                }
+
+                if (localizationSet == null)
+                {
+                    localizationSet = provider.GetLocalizationSet(currentCulture, null);
+                }
+            }
+        }
 
         if (localizationSet is null)
         {
